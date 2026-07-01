@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-RubricasApplication<rubricas>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "web.rubricas.RubricasApplication",
+            "projectName": "rubricas",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

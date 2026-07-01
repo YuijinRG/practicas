@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>EduRúbrica | Rúbricas</title>
+    <style>
+        :root { --primary:#2563eb; --primary-dark:#0f172a; --muted:#64748b; --border:#e2e8f0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #f4f8ff 0%, #eef4ff 100%); color: #0f172a; min-height: 100vh; }
+        .app-shell { display: flex; min-height: 100vh; }
+        .sidebar { width: 270px; background: linear-gradient(180deg, #081224 0%, #0f172a 100%); color: #fff; padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; }
+        .brand { font-size: 24px; font-weight: 800; letter-spacing: 0.02em; }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-nav a { color: #cbd5e1; text-decoration: none; padding: 12px 14px; border-radius: 12px; transition: all .2s ease; }
+        .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(255,255,255,0.12); color: white; }
+        .user-card { margin-top: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 14px; }
+        .main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 22px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; }
+        .topbar h1 { margin: 0; font-size: 28px; }
+        .topbar .meta { color: var(--muted); font-size: 14px; }
+        .grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; }
+        .card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08); transition: transform .2s ease, box-shadow .2s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1); }
+        h1, h2 { color: var(--primary); }
+        form { display: flex; flex-direction: column; gap: 10px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; }
+        textarea { min-height: 90px; resize: vertical; }
+        button { padding: 12px 16px; background: linear-gradient(90deg, var(--primary), #0ea5e9); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .rubrica-item { margin-bottom: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: #fbfdff; }
+        .rubrica-item h3 { margin-top: 0; }
+        .muted { color: var(--muted); }
+        @media (max-width: 980px){ .grid{grid-template-columns:1fr;} .sidebar{width:220px;} }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">EduRúbrica</div>
+        <nav class="sidebar-nav">
+            <a href="/maestro">Mi Panel</a>
+            <a class="active" href="/maestro/rubricas">Rúbricas</a>
+            <a href="/maestro/evaluaciones">Evaluaciones</a>
+            <a href="/logout">Cerrar sesión</a>
+        </nav>
+        <div class="user-card">
+            <strong>Prof. Ana Castillo</strong>
+            <div class="muted">Docente · Historia</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1>Rúbricas</h1>
+                <div class="meta">Crea y gestiona tus instrumentos de evaluación.</div>
+            </div>
+            <div class="meta">Colegio San Ignacio</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Crear rúbrica</h2>
+                <form action="/maestro/rubricas" method="post">
+                    <input type="text" name="nombre" placeholder="Nombre de la rúbrica" required>
+                    <input type="text" name="curso" placeholder="Curso" required>
+                    <textarea name="descripcion" placeholder="Descripción"></textarea>
+                    <textarea name="criterios" placeholder="Criterios separados por coma" required></textarea>
+                    <button type="submit">Guardar rúbrica</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Rúbricas creadas</h2>
+                <div th:each="rubrica : ${rubricas}" class="rubrica-item">
+                    <h3 th:text="${rubrica.nombre}"></h3>
+                    <p><strong>Curso:</strong> <span th:text="${rubrica.curso}"></span></p>
+                    <p class="muted"><strong>Descripción:</strong> <span th:text="${rubrica.descripcion}"></span></p>
+                    <p class="muted"><strong>Criterios:</strong> <span th:text="${rubrica.criterios}"></span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
