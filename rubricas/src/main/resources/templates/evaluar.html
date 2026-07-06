@@ -2,41 +2,509 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Evaluar</title>
+    <title>Matriz de Evaluación - EduRúbrica</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 24px; }
-        .card { border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; }
-        input, textarea, select { display: block; width: 320px; margin-bottom: 8px; padding: 8px; }
-        button { padding: 8px 12px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0f172a, #2563eb);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        header .logo { font-weight: bold; font-size: 18px; }
+        
+        nav a {
+            color: white;
+            margin-left: 24px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover { opacity: 0.7; }
+        
+        .teacher-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .profile-info { font-size: 13px; }
+        .profile-info .name { font-weight: bold; display: block; }
+        .profile-info .role { font-size: 12px; opacity: 0.8; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        
+        .task-info {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+        
+        .task-details h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+        
+        .task-details p {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        
+        .attachment {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .attachment:hover { background: #e2e8f0; }
+        
+        .score-badge {
+            text-align: right;
+            padding: 12px 16px;
+            background: #fff7ed;
+            border-radius: 8px;
+        }
+        
+        .criteria-count { font-size: 24px; font-weight: bold; color: #f97316; }
+        .estimated-grade { font-size: 12px; color: #64748b; margin-top: 4px; }
+        
+        .submission-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            line-height: 1.7;
+        }
+        
+        .submission-content h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        
+        .submission-content h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: #2563eb;
+        }
+        
+        .submission-content p {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #334155;
+        }
+        
+        .rubric-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+        
+        .rubric-header {
+            background: linear-gradient(135deg, #0f172a, #2563eb);
+            color: white;
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .rubric-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 0;
+        }
+        
+        .rubric-criterion {
+            border-bottom: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+        }
+        
+        .rubric-criterion:last-child { border-bottom: none; }
+        
+        .criterion-name {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        
+        .criterion-levels {
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .level-option {
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .level-option:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        
+        .level-option input[type="radio"] {
+            display: none;
+        }
+        
+        .level-option input[type="radio"]:checked + .level-label {
+            color: white;
+            background: #2563eb;
+        }
+        
+        .level-option input[type="radio"]:checked {
+            background: #2563eb;
+        }
+        
+        .level-label {
+            display: block;
+            font-weight: 600;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .level-1 { color: #dc2626; }
+        .level-2 { color: #f97316; }
+        .level-3 { color: #16a34a; }
+        .level-4 { color: #7c3aed; }
+        
+        .feedback-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .feedback-section h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .feedback-section textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .feedback-section textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(90deg, #2563eb, #0ea5e9);
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 12px; }
+            nav { order: -1; }
+            .rubric-grid { grid-template-columns: 1fr; }
+            .criterion-levels { grid-template-columns: 1fr; }
+            .criterion-name { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .button-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
-<h1>Evaluación dinámica</h1>
-<div th:each="rubrica : ${rubricas}" class="card">
-    <h3 th:text="${rubrica.nombre}"></h3>
-    <p><strong>Curso:</strong> <span th:text="${rubrica.curso}"></span></p>
-    <p><strong>Criterios:</strong> <span th:text="${rubrica.criterios}"></span></p>
-    <form action="/estudiante/evaluar" method="post">
-        <input type="hidden" name="rubricaId" th:value="${rubrica.id}">
-        <input type="hidden" name="curso" th:value="${rubrica.curso}">
-        <label>Puntaje</label>
-        <select name="puntaje">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="50">50</option>
-            <option value="60">60</option>
-            <option value="70">70</option>
-            <option value="80">80</option>
-            <option value="90">90</option>
-            <option value="100">100</option>
-        </select>
-        <label>Observación</label>
-        <textarea name="observacion" placeholder="Escribe tu observación"></textarea>
-        <button type="submit">Guardar evaluación</button>
+
+<header>
+    <div class="logo">EduRúbrica</div>
+    <nav>
+        <a href="/maestro">Docente</a>
+        <a href="/maestro/evaluaciones">Evaluación</a>
+        <a href="/maestro/repositorio">Repositorio</a>
+    </nav>
+    <div class="teacher-profile">
+        <div class="avatar">AC</div>
+        <div class="profile-info">
+            <span class="name">Prof. Ana Castillo</span>
+            <span class="role">Docente · Historia</span>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="page-title">Matriz de Evaluación</h1>
+    
+    <div class="task-info">
+        <div class="task-header">
+            <div class="task-details">
+                <h3>Estudiante: Carlos Venegas · Tarea: Ensayo — Causas de la Primera Guerra Mundial</h3>
+                <p>Historia, 3°B</p>
+                <a href="#" class="attachment">📎 portfolio_carlos_venegas.pdf</a>
+            </div>
+            <div class="score-badge">
+                <div class="criteria-count">0/5 criterios</div>
+                <div class="estimated-grade">Nota estimada: —</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="submission-content">
+        <h2>Las Causas de la Primera Guerra Mundial: Un Análisis Multifactorial</h2>
+        
+        <h3>Comprensión del Tema</h3>
+        <p>La Primera Guerra Mundial (1914–1918) no fue el resultado de un solo acontecimiento, sino la culminación de décadas de tensiones políticas, rivalidades imperialistas y alianzas militares entrelazadas. El asesinato del Archiduque Francisco Fernando en Sarajevo el 28 de junio de 1914 actuó como detonante, pero las causas estructurales son más profundas y complejas.</p>
+        
+        <h3>Análisis de Causas</h3>
+        <p>En primer lugar, el sistema de alianzas bipolar —la Triple Entente (Francia, Rusia, Reino Unido) frente a la Triple Alianza (Alemania, Austria-Hungría, Italia)— convirtió un conflicto regional en uno global casi automáticamente. Keegan (1998) argumenta que este sistema actuó como "un mecanismo de amplificación" que escaló la crisis en semanas.</p>
+        
+        <p>El imperialismo también jugó un rol central. La carrera por colonias en África y Asia generó fricciones constantes entre las potencias europeas. Las Crisis de Marruecos (1905 y 1911) casi llevaron a un conflicto abierto entre Francia y Alemania, evidenciando la fragilidad del orden internacional de la época (Ferguson, 2001).</p>
+        
+        <h3>Conclusión</h3>
+        <p>Finalmente, el militarismo y la carrera armamentista —especialmente el programa naval alemán que desafió la hegemonía británica— creó una lógica de seguridad preventiva que incentivaba la guerra antes que la negociación. En conclusión, la Gran Guerra fue el producto de un sistema internacional disfuncional, no de una decisión individual irresponsable.</p>
+        
+        <p><strong>Referencias:</strong> Keegan, J. (1998). The First World War. Hutchinson. / Ferguson, N. (2001). El horror de la guerra. Ed. Debate.</p>
+    </div>
+    
+    <form action="/maestro/evaluaciones/guardar" method="post">
+        <div class="rubric-section">
+            <div class="rubric-header">Criterios de Evaluación</div>
+            
+            <div class="rubric-criterion">
+                <div class="criterion-name">Comprensión del Tema</div>
+                <div class="criterion-levels">
+                    <label class="level-option">
+                        <input type="radio" name="criterio1" value="inicial">
+                        <span class="level-label level-1">Inicial</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Muestra comprensión mínima o incorrecta</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio1" value="en-desarrollo">
+                        <span class="level-label level-2">En Desarrollo</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Comprende aspectos básicos con confusiones</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio1" value="logrado">
+                        <span class="level-label level-3">Logrado</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Demuestra comprensión sólida</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio1" value="sobresaliente">
+                        <span class="level-label level-4">Sobresaliente</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Comprensión profunda y precisa</small>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="rubric-criterion">
+                <div class="criterion-name">Argumentación</div>
+                <div class="criterion-levels">
+                    <label class="level-option">
+                        <input type="radio" name="criterio2" value="inicial">
+                        <span class="level-label level-1">Inicial</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Argumentos débiles o ausentes</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio2" value="en-desarrollo">
+                        <span class="level-label level-2">En Desarrollo</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Argumentos básicos con escasa evidencia</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio2" value="logrado">
+                        <span class="level-label level-3">Logrado</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Argumentos claros con evidencia relevante</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio2" value="sobresaliente">
+                        <span class="level-label level-4">Sobresaliente</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Argumentos sólidos y originales</small>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="rubric-criterion">
+                <div class="criterion-name">Uso de Fuentes</div>
+                <div class="criterion-levels">
+                    <label class="level-option">
+                        <input type="radio" name="criterio3" value="inicial">
+                        <span class="level-label level-1">Inicial</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Sin fuentes o inadecuadas</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio3" value="en-desarrollo">
+                        <span class="level-label level-2">En Desarrollo</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Pocas fuentes, parcialmente relevantes</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio3" value="logrado">
+                        <span class="level-label level-3">Logrado</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Fuentes apropiadas y citadas</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio3" value="sobresaliente">
+                        <span class="level-label level-4">Sobresaliente</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Fuentes diversas y bien integradas</small>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="rubric-criterion">
+                <div class="criterion-name">Redacción y Estructura</div>
+                <div class="criterion-levels">
+                    <label class="level-option">
+                        <input type="radio" name="criterio4" value="inicial">
+                        <span class="level-label level-1">Inicial</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Desorganizado con errores graves</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio4" value="en-desarrollo">
+                        <span class="level-label level-2">En Desarrollo</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Estructura básica con algunos errores</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio4" value="logrado">
+                        <span class="level-label level-3">Logrado</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Bien estructurado y coherente</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio4" value="sobresaliente">
+                        <span class="level-label level-4">Sobresaliente</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Estructura excelente y pulida</small>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="rubric-criterion">
+                <div class="criterion-name">Pensamiento Crítico (Bloom: Evaluar)</div>
+                <div class="criterion-levels">
+                    <label class="level-option">
+                        <input type="radio" name="criterio5" value="inicial">
+                        <span class="level-label level-1">Inicial</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Sin análisis crítico</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio5" value="en-desarrollo">
+                        <span class="level-label level-2">En Desarrollo</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Análisis superficial</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio5" value="logrado">
+                        <span class="level-label level-3">Logrado</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Análisis profundo y reflexivo</small>
+                    </label>
+                    <label class="level-option">
+                        <input type="radio" name="criterio5" value="sobresaliente">
+                        <span class="level-label level-4">Sobresaliente</span>
+                        <small style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">Análisis crítico excepcional</small>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feedback-section" style="margin-top: 24px;">
+            <h3>Retroalimentación para el estudiante</h3>
+            <textarea name="retroalimentacion" placeholder="Escribe aquí comentarios cualitativos y sugerencias de mejora..."></textarea>
+            <div class="button-group">
+                <button type="button" class="btn-cancel" onclick="window.history.back()">Cancelar</button>
+                <button type="submit" class="btn-submit">Enviar evaluación</button>
+            </div>
+        </div>
     </form>
 </div>
-<p><a href="/logout">Cerrar sesión</a></p>
+
 </body>
 </html>

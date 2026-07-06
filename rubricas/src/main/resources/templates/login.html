@@ -17,6 +17,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 24px;
+            padding-bottom: 100px;
             gap: 32px;
             flex-wrap: wrap;
         }
@@ -70,6 +71,48 @@
             margin-bottom: 12px;
             font-size: 14px;
         }
+        .role-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .role-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .role-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .role-card p {
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .role-card .feature {
+            color: #fbbf24;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        @media (max-width: 768px) {
+            .role-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.95);
+            padding: 16px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -77,10 +120,22 @@
     <div class="hero">
         <div class="pill">EduRúbrica</div>
         <h1>Evaluación auténtica basada en rúbricas</h1>
-        <p>Plataforma integral para docentes y estudiantes. Crea rúbricas con criterios claros, evalúa con matrices interactivas y visualiza el progreso por competencias.</p>
+        <p>Plataforma integral para docentes y estudiantes. Crea rúbricas con Taxonomía de Bloom, evalúa con matrices interactivas y visualiza el progreso por competencias.</p>
         <p><strong>¿Cómo ingresas hoy?</strong></p>
-        <p>• Soy Estudiante: visualiza tus cursos, competencias y retroalimentación.<br>
-        • Soy Docente: gestiona cursos, crea rúbricas y revisa evaluaciones.</p>
+        
+        <div class="role-cards">
+            <div class="role-card">
+                <h3>Soy Estudiante</h3>
+                <p>Visualiza tu progreso, competencias y retroalimentación de tus docentes.</p>
+                <p class="feature">📊 Matrices de evaluación interactivas</p>
+            </div>
+            <div class="role-card">
+                <h3>Soy Docente</h3>
+                <p>Evalúa con rúbricas, gestiona cursos y accede al repositorio de plantillas.</p>
+                <p class="feature">📚 Repositorio de rúbricas validadas</p>
+                <p class="feature">📈 Seguimiento de competencias por estudiante</p>
+            </div>
+        </div>
     </div>
 
     <div class="card">
@@ -97,5 +152,9 @@
         </div>
     </div>
 </div>
+
+<footer>
+    <p>© 2026 EduRúbrica · Desarrollado para la comunidad educativa chilena</p>
+</footer>
 </body>
 </html>

@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <title>EduRúbrica | Docente</title>
     <style>
-        :root { --primary:#2563eb; --primary-dark:#0f172a; --muted:#64748b; --border:#e2e8f0; }
+        :root { 
+            --primary:#2563eb; 
+            --primary-dark:#0f172a; 
+            --muted:#64748b; 
+            --border:#e2e8f0;
+            --success:#16a34a;
+            --warning:#f97316;
+            --danger:#dc2626;
+        }
         * { box-sizing: border-box; }
         body {
             margin: 0;
@@ -22,6 +30,9 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
         }
         .brand { font-size: 24px; font-weight: 800; letter-spacing: 0.02em; }
         .sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
@@ -34,37 +45,291 @@
         }
         .sidebar-nav a.active, .sidebar-nav a:hover { background: rgba(255,255,255,0.12); color: white; }
         .user-card { margin-top: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; padding: 14px; }
-        .main { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 22px; }
+        .main { 
+            flex: 1; 
+            padding: 24px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 22px;
+            margin-left: 270px;
+        }
         .topbar { display: flex; justify-content: space-between; align-items: center; }
         .topbar h1 { margin: 0; font-size: 28px; }
         .topbar .meta { color: var(--muted); font-size: 14px; }
-        .grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 24px;
+        }
+        .tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+        .tab:hover { color: var(--primary); }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
         .card {
             background: white;
             border-radius: 20px;
             padding: 24px;
             box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-            transition: transform .2s ease, box-shadow .2s ease;
         }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1); }
-        .profile { display: flex; flex-direction: column; gap: 16px; }
-        .avatar { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; }
+        
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0f172a;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-group textarea { 
+            resize: vertical; 
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), #0ea5e9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .rubric-matrix {
+            margin-top: 24px;
+        }
+        
+        .rubric-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 16px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+        }
+        
+        .rubric-criterion {
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+        
+        .rubric-criterion:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .criterion-name {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .criterion-levels {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .level-option {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .level-option:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .level-option input[type="radio"] {
+            display: none;
+        }
+        
+        .level-option input[type="radio"]:checked + .level-label {
+            color: white;
+            background: var(--primary);
+            border-radius: 4px;
+            display: block;
+            padding: 4px;
+        }
+        
+        .level-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .level-initial { color: var(--danger); }
+        .level-development { color: var(--warning); }
+        .level-achieved { color: var(--success); }
+        .level-outstanding { color: #7c3aed; }
+        
+        .feedback-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        
+        .feedback-box h4 {
+            margin: 0 0 12px;
+            color: #0f172a;
+        }
+        
+        .avatar { 
+            width: 58px; 
+            height: 58px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, var(--primary), #1d4ed8); 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 22px; 
+            font-weight: 700; 
+        }
+        
+        .profile { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+        }
+        
         .profile h2 { margin: 0; font-size: 22px; }
         .muted { color: var(--muted); margin: 4px 0 0; }
-        .panel-list a { display: block; padding: 10px 0; color: var(--primary); text-decoration: none; font-weight: 600; }
-        .hero { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 20px; padding: 24px; }
-        .hero h2 { margin: 0 0 8px; font-size: 28px; }
-        .hero p { margin: 0; opacity: 0.92; }
-        .evaluation-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
-        .chip { display: inline-block; background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px; }
-        .criteria { display: grid; gap: 12px; margin: 18px 0; }
-        .criterion { border: 1px solid var(--border); border-radius: 14px; padding: 14px; background: #fbfdff; }
-        .criterion strong { display: block; margin-bottom: 6px; }
-        .feedback { margin-top: 14px; padding: 14px; border-radius: 14px; background: #f8fafc; border: 1px solid var(--border); }
-        textarea { width: 100%; min-height: 100px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; box-sizing: border-box; margin-top: 8px; resize: vertical; }
-        button { margin-top: 12px; background: linear-gradient(90deg, var(--primary), #0ea5e9); color: white; border: none; padding: 12px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; }
-        .file { margin-top: 10px; color: var(--muted); font-size: 14px; }
-        @media (max-width: 980px){ .grid{grid-template-columns:1fr;} .sidebar{width:220px;} }
+        
+        .panel-list a { 
+            display: block; 
+            padding: 10px 0; 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+        
+        .grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+        
+        .info-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 20px;
+            padding: 24px;
+        }
+        
+        .info-card h2 { margin: 0 0 8px; font-size: 24px; }
+        .info-card p { margin: 0; opacity: 0.92; }
+        
+        .success-message {
+            background: #dcfce7;
+            color: var(--success);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 980px){
+            .grid { grid-template-columns: 1fr; }
+            .sidebar { width: 220px; }
+            .main { margin-left: 220px; }
+            .form-row { grid-template-columns: 1fr; }
+            .criterion-levels { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (max-width: 768px){
+            .sidebar { position: absolute; }
+            .main { margin-left: 0; padding-top: 80px; }
+            .rubric-criterion { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -86,55 +351,295 @@
     <main class="main">
         <div class="topbar">
             <div>
-                <h1>Evaluación</h1>
-                <div class="meta">Matriz de evaluación y retroalimentación</div>
+                <h1>Panel de Docente</h1>
+                <div class="meta">Gestiona tus evaluaciones y rúbricas</div>
             </div>
             <div class="meta">Historia · 3°B</div>
         </div>
 
-        <div class="grid">
-            <div class="card profile">
-                <div class="avatar">AC</div>
-                <div>
-                    <h2 th:text="${usuario != null ? usuario.username : 'Docente'}">Docente</h2>
-                    <p class="muted">Docente · Historia</p>
-                    <p class="muted">Matriz de Evaluación</p>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(event, 'crear-evaluacion')">Crear Evaluación</button>
+            <button class="tab" onclick="switchTab(event, 'evaluaciones-recientes')">Evaluaciones Recientes</button>
+            <button class="tab" onclick="switchTab(event, 'mis-rubricas')">Mis Rúbricas</button>
+        </div>
+
+        <!-- TAB 1: CREAR EVALUACIÓN -->
+        <div id="crear-evaluacion" class="tab-content active">
+            <div class="grid">
+                <div class="card profile">
+                    <div class="avatar">AC</div>
+                    <div>
+                        <h2 th:text="${usuario != null ? usuario.username : 'Docente'}">Prof. Ana Castillo</h2>
+                        <p class="muted">Docente · Historia</p>
+                        <p class="muted">3°B · 35 estudiantes</p>
+                    </div>
+                    <div class="panel-list">
+                        <a href="#crear-evaluacion" onclick="switchTab(event, 'crear-evaluacion')">Nueva Evaluación</a>
+                        <a href="/maestro/rubricas">Ver Rúbricas</a>
+                        <a href="/maestro/evaluaciones">Historial</a>
+                    </div>
                 </div>
-                <div class="panel-list">
-                    <a href="/maestro/rubricas">Crear rúbrica</a>
-                    <a href="/maestro/evaluaciones">Ver evaluaciones</a>
+
+                <div>
+                    <div class="card">
+                        <h3 style="margin-top: 0; margin-bottom: 20px;">Nueva Evaluación</h3>
+                        
+                        <div th:if="${mensaje}" class="success-message" th:text="${mensaje}"></div>
+                        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+                        <form action="/maestro/evaluaciones/crear" method="post">
+                            <div class="form-group">
+                                <label for="estudiante">Selecciona el Estudiante</label>
+                                <select id="estudiante" name="estudianteId" required>
+                                    <option value="">-- Selecciona un estudiante --</option>
+                                    <option value="1">Carlos Venegas</option>
+                                    <option value="2">María González</option>
+                                    <option value="3">José Martínez</option>
+                                    <option value="4">Sofía López</option>
+                                    <option value="5">Diego Fernández</option>
+                                </select>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tarea">Tarea/Trabajo</label>
+                                    <input type="text" id="tarea" name="tarea" placeholder="Ej: Ensayo sobre la Primera Guerra Mundial" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tipo">Tipo de Evaluación</label>
+                                    <select id="tipo" name="tipo" required>
+                                        <option value="ensayo">Ensayo</option>
+                                        <option value="proyecto">Proyecto</option>
+                                        <option value="presentacion">Presentación</option>
+                                        <option value="trabajo-practico">Trabajo Práctico</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rubrica">Selecciona la Rúbrica</label>
+                                <select id="rubrica" name="rubricaId" required>
+                                    <option value="">-- Selecciona una rúbrica --</option>
+                                    <option value="1">Rúbrica de Ensayos Históricos</option>
+                                    <option value="2">Rúbrica de Proyectos de Investigación</option>
+                                    <option value="3">Rúbrica de Presentaciones Orales</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="archivo">Subir archivo (opcional)</label>
+                                <input type="file" id="archivo" name="archivo" accept=".pdf,.doc,.docx,.txt">
+                            </div>
+
+                            <h4 style="margin-top: 24px; margin-bottom: 16px; color: #0f172a;">Matriz de Evaluación</h4>
+                            
+                            <div class="rubric-matrix">
+                                <div class="rubric-header">Criterios de Evaluación (Taxonomía de Bloom)</div>
+
+                                <div class="rubric-criterion">
+                                    <div class="criterion-name">Comprensión del Tema</div>
+                                    <div class="criterion-levels">
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio1" value="inicial">
+                                            <span class="level-label level-initial">Inicial</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio1" value="en-desarrollo">
+                                            <span class="level-label level-development">En Desarrollo</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio1" value="logrado">
+                                            <span class="level-label level-achieved">Logrado</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio1" value="sobresaliente">
+                                            <span class="level-label level-outstanding">Sobresaliente</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="rubric-criterion">
+                                    <div class="criterion-name">Argumentación</div>
+                                    <div class="criterion-levels">
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio2" value="inicial">
+                                            <span class="level-label level-initial">Inicial</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio2" value="en-desarrollo">
+                                            <span class="level-label level-development">En Desarrollo</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio2" value="logrado">
+                                            <span class="level-label level-achieved">Logrado</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio2" value="sobresaliente">
+                                            <span class="level-label level-outstanding">Sobresaliente</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="rubric-criterion">
+                                    <div class="criterion-name">Uso de Fuentes</div>
+                                    <div class="criterion-levels">
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio3" value="inicial">
+                                            <span class="level-label level-initial">Inicial</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio3" value="en-desarrollo">
+                                            <span class="level-label level-development">En Desarrollo</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio3" value="logrado">
+                                            <span class="level-label level-achieved">Logrado</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio3" value="sobresaliente">
+                                            <span class="level-label level-outstanding">Sobresaliente</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="rubric-criterion">
+                                    <div class="criterion-name">Redacción y Estructura</div>
+                                    <div class="criterion-levels">
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio4" value="inicial">
+                                            <span class="level-label level-initial">Inicial</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio4" value="en-desarrollo">
+                                            <span class="level-label level-development">En Desarrollo</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio4" value="logrado">
+                                            <span class="level-label level-achieved">Logrado</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio4" value="sobresaliente">
+                                            <span class="level-label level-outstanding">Sobresaliente</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="rubric-criterion">
+                                    <div class="criterion-name">Pensamiento Crítico (Bloom: Evaluar)</div>
+                                    <div class="criterion-levels">
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio5" value="inicial">
+                                            <span class="level-label level-initial">Inicial</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio5" value="en-desarrollo">
+                                            <span class="level-label level-development">En Desarrollo</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio5" value="logrado">
+                                            <span class="level-label level-achieved">Logrado</span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="criterio5" value="sobresaliente">
+                                            <span class="level-label level-outstanding">Sobresaliente</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="feedback-box">
+                                <h4>Retroalimentación para el Estudiante</h4>
+                                <textarea name="retroalimentacion" placeholder="Escribe comentarios cualitativos, sugerencias de mejora y próximos pasos..."></textarea>
+                            </div>
+
+                            <div class="button-group">
+                                <button type="reset" class="btn btn-secondary">Limpiar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Evaluación</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <!-- TAB 2: EVALUACIONES RECIENTES -->
+        <div id="evaluaciones-recientes" class="tab-content">
             <div class="card">
-                <div class="evaluation-header">
-                    <div>
-                        <span class="chip">0/5 criterios</span>
-                        <h3 style="margin: 10px 0 4px;">Matriz de Evaluación</h3>
-                        <p class="muted">Nota estimada: —</p>
+                <h3 style="margin-top: 0;">Evaluaciones Recientes</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Estudiante</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Tarea</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Calificación</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Fecha</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px;">Carlos Venegas</td>
+                            <td style="padding: 12px;">Ensayo I Guerra Mundial</td>
+                            <td style="padding: 12px;"><span style="background: #dcfce7; color: var(--success); padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;">4/5</span></td>
+                            <td style="padding: 12px; color: var(--muted); font-size: 14px;">05 jul 2026</td>
+                            <td style="padding: 12px;"><a href="/maestro/evaluaciones/1" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver</a></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px;">María González</td>
+                            <td style="padding: 12px;">Proyecto Revolución Francesa</td>
+                            <td style="padding: 12px;"><span style="background: #dcfce7; color: var(--success); padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;">5/5</span></td>
+                            <td style="padding: 12px; color: var(--muted); font-size: 14px;">04 jul 2026</td>
+                            <td style="padding: 12px;"><a href="/maestro/evaluaciones/2" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: MIS RÚBRICAS -->
+        <div id="mis-rubricas" class="tab-content">
+            <div class="card">
+                <h3 style="margin-top: 0; margin-bottom: 20px;">Mis Rúbricas</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                    <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <h4 style="margin: 0 0 8px; color: #0f172a;">Rúbrica de Ensayos Históricos</h4>
+                        <p style="margin: 0 0 12px; font-size: 14px; color: var(--muted);">5 criterios · Bloom: Analizar, Evaluar</p>
+                        <a href="/maestro/rubricas/1" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver detalle →</a>
                     </div>
-                    <div class="chip">Historia · 3°B</div>
-                </div>
-
-                <div class="file">portfolio_carlos_venegas.pdf</div>
-
-                <div class="criteria">
-                    <div class="criterion"><strong>Comprensión del Tema</strong><div>La Primera Guerra Mundial ...</div></div>
-                    <div class="criterion"><strong>Argumentación</strong><div>En primer lugar, el sistema de alianzas ...</div></div>
-                    <div class="criterion"><strong>Uso de Fuentes</strong><div>El imperialismo también jugó un rol central ...</div></div>
-                    <div class="criterion"><strong>Redacción y Estructura</strong><div>Finalmente, el militarismo ...</div></div>
-                    <div class="criterion"><strong>Pensamiento Crítico (Bloom: Evaluar)</strong><div>En conclusión, la Gran Guerra ...</div></div>
-                </div>
-
-                <div class="feedback">
-                    <strong>Retroalimentación para el estudiante</strong>
-                    <textarea placeholder="Escribe aquí comentarios cualitativos y sugerencias de mejora..."></textarea>
-                    <div class="muted">Referencias: Keegan, J. (1998). The First World War. Hutchinson. / Ferguson, N. (2001). El horror de la guerra. Ed. Debate.</div>
-                    <button>Enviar evaluación</button>
+                    <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <h4 style="margin: 0 0 8px; color: #0f172a;">Rúbrica de Proyectos</h4>
+                        <p style="margin: 0 0 12px; font-size: 14px; color: var(--muted);">6 criterios · Bloom: Crear, Evaluar</p>
+                        <a href="/maestro/rubricas/2" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver detalle →</a>
+                    </div>
+                    <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                        <h4 style="margin: 0 0 8px; color: #0f172a;">Rúbrica de Presentaciones</h4>
+                        <p style="margin: 0 0 12px; font-size: 14px; color: var(--muted);">4 criterios · Bloom: Aplicar, Analizar</p>
+                        <a href="/maestro/rubricas/3" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver detalle →</a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 </div>
+
+<script>
+    function switchTab(event, tabName) {
+        event.preventDefault();
+        
+        // Ocultar todos los tab-content
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+        
+        // Remover clase active de todos los tabs
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Mostrar el tab seleccionado
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+    }
+</script>
+
 </body>
 </html>
