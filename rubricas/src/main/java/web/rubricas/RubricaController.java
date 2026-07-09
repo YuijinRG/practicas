@@ -23,7 +23,7 @@ public class RubricaController {
             return "redirect:/login";
         }
         model.addAttribute("usuario", usuario);
-        model.addAttribute("rubricas", rubricaRepository.findAll());
+        model.addAttribute("rubricas", rubricaRepository.findByCreador(usuario.getUsername()));
         return "rubricas_maestro";
     }
 

@@ -24,6 +24,12 @@
         .evaluation-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
         .evaluation-item:last-child { border-bottom: none; padding-bottom: 0; }
         .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 700; }
+        .message { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 14px; }
+        .message.success { background: #dcfce7; color: #15803d; }
+        .message.error { background: #fee2e2; color: #b91c1c; }
+        .empty { color: var(--muted); }
+        .criteria { margin: 8px 0 0; color: #334155; font-size: 14px; }
+        .criteria span { font-weight: 600; color: #0f172a; }
         @media (max-width: 980px){ .sidebar{width:220px;} }
     </style>
 </head>
@@ -38,7 +44,7 @@
             <a href="/logout">Cerrar sesión</a>
         </nav>
         <div class="user-card">
-            <strong>Prof. Ana Castillo</strong>
+            <strong th:text="${usuario != null ? usuario.username : 'Docente'}">Docente</strong>
             <div class="muted">Docente · Historia</div>
         </div>
     </aside>
@@ -49,14 +55,30 @@
                 <h1>Evaluaciones</h1>
                 <div class="meta">Historial de evaluaciones registradas.</div>
             </div>
-            <div class="meta">Historial académico</div>
+            <div class="meta"><a href="/maestro" style="text-decoration:none; color:#2563eb; font-weight:600;">Nueva evaluación</a></div>
         </div>
 
         <div class="card">
+            <div th:if="${mensaje}" class="message success" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+            <div th:if="${#lists.isEmpty(evaluaciones)}" class="empty">
+                Todavía no hay evaluaciones registradas.
+            </div>
+
             <div th:each="evaluacion : ${evaluaciones}" class="evaluation-item">
                 <p><strong>Estudiante:</strong> <span th:text="${evaluacion.estudiante}"></span></p>
                 <p><strong>Curso:</strong> <span th:text="${evaluacion.curso}"></span></p>
-                <p><strong>Puntaje:</strong> <span class="pill" th:text="${evaluacion.puntaje}"></span></p>
+                <p><strong>Fecha:</strong> <span th:text="${evaluacion.createdAt != null ? evaluacion.createdAt : 'Sin fecha'}"></span></p>
+                <p><strong>Puntaje:</strong> <span class="pill" th:text="${evaluacion.puntaje + '%'}"></span></p>
+                <div class="criteria">
+                    <span>Criterios:</span>
+                    C1=<span th:text="${evaluacion.criterio1 != null ? evaluacion.criterio1 : '-'}"></span>,
+                    C2=<span th:text="${evaluacion.criterio2 != null ? evaluacion.criterio2 : '-'}"></span>,
+                    C3=<span th:text="${evaluacion.criterio3 != null ? evaluacion.criterio3 : '-'}"></span>,
+                    C4=<span th:text="${evaluacion.criterio4 != null ? evaluacion.criterio4 : '-'}"></span>,
+                    C5=<span th:text="${evaluacion.criterio5 != null ? evaluacion.criterio5 : '-'}"></span>
+                </div>
                 <p><strong>Observación:</strong> <span th:text="${evaluacion.observacion}"></span></p>
             </div>
         </div>

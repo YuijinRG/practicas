@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class RubricaRepository {
@@ -28,5 +29,17 @@ public class RubricaRepository {
     public List<Rubrica> findByCurso(String curso) {
         String sql = "SELECT * FROM rubricas WHERE curso = ? ORDER BY id DESC";
         return jdbcTemplate.query(sql, new Object[]{curso}, new BeanPropertyRowMapper<>(Rubrica.class));
+    }
+
+    public List<Rubrica> findByCreador(String creador) {
+        String sql = "SELECT * FROM rubricas WHERE creador = ? ORDER BY id DESC";
+        return jdbcTemplate.query(sql, new Object[]{creador}, new BeanPropertyRowMapper<>(Rubrica.class));
+    }
+
+    public Optional<Rubrica> findById(Long id) {
+        String sql = "SELECT * FROM rubricas WHERE id = ?";
+        return jdbcTemplate.query(sql, new Object[]{id}, new BeanPropertyRowMapper<>(Rubrica.class))
+                .stream()
+                .findFirst();
     }
 }

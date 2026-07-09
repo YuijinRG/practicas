@@ -21,6 +21,11 @@ class EvaluacionRepositoryTest {
         evaluacion.setRubricaId(1L);
         evaluacion.setCurso("Programación");
         evaluacion.setPuntaje("90");
+        evaluacion.setCriterio1("logrado");
+        evaluacion.setCriterio2("logrado");
+        evaluacion.setCriterio3("sobresaliente");
+        evaluacion.setCriterio4("en-desarrollo");
+        evaluacion.setCriterio5("logrado");
         evaluacion.setObservacion("Buen desempeño");
 
         evaluacionRepository.save(evaluacion);

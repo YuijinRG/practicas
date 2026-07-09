@@ -7,13 +7,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Controller
 public class LoginController {
 
     private final UsuarioRepository usuarioRepository;
+    private final RubricaRepository rubricaRepository;
+    private final EvaluacionRepository evaluacionRepository;
 
-    public LoginController(UsuarioRepository usuarioRepository) {
+    public LoginController(UsuarioRepository usuarioRepository,
+                           RubricaRepository rubricaRepository,
+                           EvaluacionRepository evaluacionRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.rubricaRepository = rubricaRepository;
+        this.evaluacionRepository = evaluacionRepository;
     }
 
     @GetMapping("/login")
@@ -96,7 +106,19 @@ public class LoginController {
         if (usuario == null || !"MAESTRO".equalsIgnoreCase(usuario.getRol())) {
             return "redirect:/login";
         }
+        List<Rubrica> rubricas = rubricaRepository.findByCreador(usuario.getUsername());
+        Set<Long> rubricaIds = rubricas.stream()
+                .map(Rubrica::getId)
+                .collect(Collectors.toSet());
+
+        List<Evaluacion> evaluacionesRecientes = evaluacionRepository.findAll().stream()
+                .filter(evaluacion -> rubricaIds.contains(evaluacion.getRubricaId()))
+                .limit(5)
+                .toList();
+
         model.addAttribute("usuario", usuario);
+        model.addAttribute("rubricas", rubricas);
+        model.addAttribute("evaluacionesRecientes", evaluacionesRecientes);
         return "maestro";
     }
 }

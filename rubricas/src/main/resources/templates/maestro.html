@@ -421,10 +421,12 @@
                                 <label for="rubrica">Selecciona la Rúbrica</label>
                                 <select id="rubrica" name="rubricaId" required>
                                     <option value="">-- Selecciona una rúbrica --</option>
-                                    <option value="1">Rúbrica de Ensayos Históricos</option>
-                                    <option value="2">Rúbrica de Proyectos de Investigación</option>
-                                    <option value="3">Rúbrica de Presentaciones Orales</option>
+                                    <option th:each="rubrica : ${rubricas}"
+                                            th:value="${rubrica.id}"
+                                            th:text="${rubrica.nombre + ' - ' + rubrica.curso}">
+                                    </option>
                                 </select>
+                                <small class="muted" th:if="${#lists.isEmpty(rubricas)}">No tienes rúbricas creadas aún. Crea una en la sección de Rúbricas.</small>
                             </div>
 
                             <div class="form-group">
@@ -571,26 +573,22 @@
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border);">
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Estudiante</th>
-                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Tarea</th>
+                            <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Curso</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Calificación</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Fecha</th>
                             <th style="padding: 12px; text-align: left; font-weight: 600; color: #0f172a;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 12px;">Carlos Venegas</td>
-                            <td style="padding: 12px;">Ensayo I Guerra Mundial</td>
-                            <td style="padding: 12px;"><span style="background: #dcfce7; color: var(--success); padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;">4/5</span></td>
-                            <td style="padding: 12px; color: var(--muted); font-size: 14px;">05 jul 2026</td>
-                            <td style="padding: 12px;"><a href="/maestro/evaluaciones/1" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver</a></td>
+                        <tr th:if="${#lists.isEmpty(evaluacionesRecientes)}">
+                            <td colspan="5" style="padding: 14px; color: var(--muted);">No hay evaluaciones recientes todavía.</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <td style="padding: 12px;">María González</td>
-                            <td style="padding: 12px;">Proyecto Revolución Francesa</td>
-                            <td style="padding: 12px;"><span style="background: #dcfce7; color: var(--success); padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;">5/5</span></td>
-                            <td style="padding: 12px; color: var(--muted); font-size: 14px;">04 jul 2026</td>
-                            <td style="padding: 12px;"><a href="/maestro/evaluaciones/2" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver</a></td>
+                        <tr th:each="evaluacion : ${evaluacionesRecientes}" style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px;" th:text="${evaluacion.estudiante}">Estudiante</td>
+                            <td style="padding: 12px;" th:text="${evaluacion.curso}">Curso</td>
+                            <td style="padding: 12px;"><span style="background: #dcfce7; color: var(--success); padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 12px;" th:text="${evaluacion.puntaje + '%'}">90%</span></td>
+                            <td style="padding: 12px; color: var(--muted); font-size: 14px;" th:text="${evaluacion.createdAt != null ? evaluacion.createdAt : 'Sin fecha'}">Sin fecha</td>
+                            <td style="padding: 12px;"><a href="/maestro/evaluaciones" style="color: var(--primary); text-decoration: none; font-weight: 600;">Ver</a></td>
                         </tr>
                     </tbody>
                 </table>

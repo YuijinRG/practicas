@@ -17,7 +17,9 @@ class LoginControllerTest {
     @Test
     void registrationShouldCreateSessionAndRedirectToStudentDashboard() {
         UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
-        LoginController controller = new LoginController(usuarioRepository);
+        RubricaRepository rubricaRepository = mock(RubricaRepository.class);
+        EvaluacionRepository evaluacionRepository = mock(EvaluacionRepository.class);
+        LoginController controller = new LoginController(usuarioRepository, rubricaRepository, evaluacionRepository);
         HttpSession session = mock(HttpSession.class);
         Model model = new ExtendedModelMap();
 
