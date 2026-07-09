@@ -1,4 +1,4 @@
-package web.rubricas;
+package web.rubricas.model;
 
 public class Usuario {
     private Long id;

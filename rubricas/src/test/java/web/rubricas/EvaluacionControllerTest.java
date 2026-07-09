@@ -4,6 +4,12 @@ import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+import web.rubricas.controller.EvaluacionController;
+import web.rubricas.model.Evaluacion;
+import web.rubricas.model.Rubrica;
+import web.rubricas.model.Usuario;
+import web.rubricas.repository.EvaluacionRepository;
+import web.rubricas.repository.RubricaRepository;
 
 import java.util.List;
 import java.util.Optional;

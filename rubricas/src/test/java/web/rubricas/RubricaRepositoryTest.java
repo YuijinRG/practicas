@@ -3,6 +3,8 @@ package web.rubricas;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import web.rubricas.model.Rubrica;
+import web.rubricas.repository.RubricaRepository;
 
 import java.util.List;
 

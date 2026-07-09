@@ -1,4 +1,4 @@
-package web.rubricas;
+package web.rubricas.model;
 
 public class Rubrica {
     private Long id;

@@ -1,8 +1,9 @@
-package web.rubricas;
+package web.rubricas.repository;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import web.rubricas.model.Rubrica;
 
 import java.util.List;
 import java.util.Optional;

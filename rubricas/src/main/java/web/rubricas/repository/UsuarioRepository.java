@@ -1,9 +1,10 @@
-package web.rubricas;
+package web.rubricas.repository;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import web.rubricas.model.Usuario;
 
 @Repository
 public class UsuarioRepository {

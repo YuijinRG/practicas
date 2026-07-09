@@ -1,4 +1,4 @@
-package web.rubricas;
+package web.rubricas.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -6,6 +6,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import web.rubricas.model.Evaluacion;
+import web.rubricas.model.Rubrica;
+import web.rubricas.model.Usuario;
+import web.rubricas.repository.EvaluacionRepository;
+import web.rubricas.repository.RubricaRepository;
+import web.rubricas.repository.UsuarioRepository;
 
 import java.util.List;
 import java.util.Set;

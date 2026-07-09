@@ -4,6 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
+import web.rubricas.controller.LoginController;
+import web.rubricas.model.Usuario;
+import web.rubricas.repository.EvaluacionRepository;
+import web.rubricas.repository.RubricaRepository;
+import web.rubricas.repository.UsuarioRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
